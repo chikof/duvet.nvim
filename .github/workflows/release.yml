@@ -54,6 +54,7 @@ jobs:
           npm install -g @semantic-release/exec
           npm install -g @semantic-release-cargo/semantic-release-cargo
           npm install -g semantic-release-export-data
+          npm install -g conventional-changelog-conventionalcommits
           npx semantic-release --dry-run --repository-url https://github.com/chikof/duvet.nvim
         id: get-next-version
         env:
@@ -243,6 +244,7 @@ jobs:
           npm install -g @semantic-release/exec
           npm install -g @semantic-release-cargo/semantic-release-cargo
           npm install -g semantic-release-export-data
+          npm install -g conventional-changelog-conventionalcommits
           npx semantic-release --repository-url https://github.com/chikof/duvet.nvim
 
   luarocks:
