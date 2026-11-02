@@ -1,3 +1,3 @@
 pub mod bindings;
-pub mod discord;
+pub mod duvet;
 pub mod pipe;

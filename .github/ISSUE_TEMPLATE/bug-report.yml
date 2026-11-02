@@ -8,7 +8,7 @@ body:
       options:
         - label: "My problem isn't listed in the [Troubleshooting](https://github.com/vyfor/cord.nvim/wiki/Troubleshooting) section of the wiki"
           required: true
-        - label: "I have looked through [existing issues](https://github.com/vyfor/cord.nvim/issues)"
+        - label: "I have looked through [existing issues](https://github.com/chikof/duvet.nvim/issues)"
           required: true
         - label: "I am aware of the recent [announcements](https://github.com/vyfor/cord.nvim/discussions/categories/announcements)"
           required: true
@@ -32,7 +32,7 @@ body:
   - type: textarea
     attributes:
       label: "Debug information"
-      description: "Output of `:Cord debug copy`"
+      description: "Output of `:Duvet debug copy`"
       render: markdown
     validations:
       required: true
@@ -50,7 +50,7 @@ body:
         require('lazy.minit').repro {
           spec = {
             {
-              'vyfor/cord.nvim',
+              'chikof/duvet.nvim',
             },
           },
         }

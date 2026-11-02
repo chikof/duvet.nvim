@@ -1,4 +1,4 @@
-use crate::ipc::discord::error::DiscordError;
+use crate::ipc::duvet::error::IpcError;
 use crate::ipc::pipe::PipeServerImpl;
 use crate::messages::events::event::{EventContext, OnEvent};
 use crate::messages::events::local::ReconnectEvent;
@@ -21,18 +21,11 @@ impl ErrorEvent {
 
 impl OnEvent for ErrorEvent {
     fn on_event(self, ctx: &mut EventContext) -> crate::Result<()> {
-        if let Some(discord_error) = self.error.downcast_ref::<DiscordError>() {
-            match discord_error {
-                DiscordError::InvalidClientId(id) => {
-                    return Err(
-                        format!("'{}' is not a valid client ID", id).into()
-                    );
-                }
-                DiscordError::ConnectionClosed => {
+        if let Some(ipc_error) = self.error.downcast_ref::<IpcError>() {
+            match ipc_error {
+                IpcError::ConnectionClosed => {
                     if ctx.cord.reconnect_state.in_progress {
-                        debug!(
-                            "Discord closed the connection during reconnect"
-                        );
+                        debug!("Duvet closed the connection during reconnect");
                         return Ok(());
                     }
 
@@ -41,7 +34,7 @@ impl OnEvent for ErrorEvent {
                         debug!(
                             "connection closed, reconnect_interval=0, returning error"
                         );
-                        return Err("Discord closed the connection".into());
+                        return Err("Duvet closed the connection".into());
                     }
 
                     debug!(
@@ -54,7 +47,7 @@ impl OnEvent for ErrorEvent {
                         ReconnectEvent::new(false)
                     ));
 
-                    debug!("Discord closed the connection");
+                    debug!("Duvet closed the connection");
 
                     return Ok(());
                 }

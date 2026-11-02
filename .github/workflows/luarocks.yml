@@ -40,8 +40,8 @@ jobs:
           version: ${{ steps.set_version.outputs.version }}
           specrev: ${{ steps.set_version.outputs.rockspec_revision }}
           detailed_description: |
-            Meet the future of rich presence with Cord, the most extensible Discord Rich Presence plugin for Neovim, powered by Rust. 
-            Cord offers a wide range of customization options allowing you to create custom and dynamic experiences that adapt to your needs.
+            Duvet is a presence plugin for Neovim that shows your activity in Duvet, powered by Rust.
+            Duvet offers a wide range of customization options allowing you to create custom and dynamic experiences that adapt to your needs.
             The possibilities are endless, and the only limit is your creativity!
         env:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}

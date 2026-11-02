@@ -1,13 +1,13 @@
 # 📦 Extensions
 
-Cord comes with several built-in extensions that you can easily enable and configure. These extensions provide ready-made functionality for common use cases.
+Duvet comes with several built-in extensions that you can easily enable and configure. These extensions provide ready-made functionality for common use cases.
 
 ## 🚀 Using Extensions
 
-To use an extension, simply add its `require` path to the `extensions` table in your `cord.setup()` configuration. If the extension is built-in, you can simply use the name alone.
+To use an extension, simply add its `require` path to the `extensions` table in your `duvet.setup()` configuration. If the extension is built-in, you can simply use the name alone.
 
 ```lua
-require('cord').setup {
+require('duvet').setup {
   extensions = {
     -- Enable an extension with its default config
     'diagnostics',
@@ -27,7 +27,7 @@ require('cord').setup {
 
 **Name:** `diagnostics`
 
-**Purpose:**  Adds real-time LSP diagnostics (errors, warnings, hints) information to your Rich Presence. Displays the number of diagnostics in the current buffer or workspace.
+**Purpose:**  Adds real-time LSP diagnostics (errors, warnings, hints) information to your presence. Displays the number of diagnostics in the current buffer or workspace.
 
 **Configuration Options:**
 
@@ -99,7 +99,7 @@ text = {
 
 ```lua
 -- Enable all except oil
-require('cord').setup {
+require('duvet').setup {
   extensions = {
     resolver = {
       sources = { true, oil = false },
@@ -115,7 +115,7 @@ require('cord').setup {
 
 **Name:** `visibility`
 
-**Purpose:**  Controls whether the Rich Presence activity is shown for a workspace or buffer based on rules. Useful for hiding activity for specific projects, directories, or file types.
+**Purpose:**  Controls whether the activity is shown for a workspace or buffer based on rules. Useful for hiding activity for specific projects, directories, or file types.
 
 **Configuration Options:**
 
@@ -162,7 +162,7 @@ require('cord').setup {
 **Usage Example (`override = true`):**
 
 ```lua
-require('cord').setup {
+require('duvet').setup {
   extensions = {
     visibility = {
       precedence = 'blacklist',
@@ -191,7 +191,7 @@ require('cord').setup {
 
 **Name:** `local_time`
 
-**Purpose:**  Sets the Rich Presence timestamp to display the current local clock time (hours, minutes and seconds) instead of elapsed time.
+**Purpose:**  Sets the presence timestamp to display the current local clock time (hours, minutes and seconds) instead of elapsed time.
 
 **Configuration Options:**
 
@@ -227,7 +227,7 @@ require('cord').setup {
 {
   scope = 'workspace', -- 'workspace', 'file', 'filetype', or 'global'
   mode = 'all',        -- 'all', 'active', or 'idle'
-  file = vim.fn.stdpath 'data' .. '/cord/extensions/persistent_timer/data.json', -- Path to the timer data file
+  file = vim.fn.stdpath 'data' .. '/duvet/extensions/persistent_timer/data.json', -- Path to the timer data file
   save_on = { 'exit', 'focus_change', 'periodic' }, -- Events that trigger a save
   save_interval = 30,  -- Interval in seconds for periodic saves
 }
@@ -316,10 +316,10 @@ require('cord').setup {
     - `true` (default): Instantly run the attachment state check on `FocusGained` and `FocusLost` events.
     - `false`: Disable focus events, and rely solely on the background interval timer.
 - **`on_attach`**:
-    - `'show'` (default): Restore Rich Presence when a client attaches to the current tmux session.
+    - `'show'` (default): Restore presence when a client attaches to the current tmux session.
     - `function`: A custom callback function.
 - **`on_detach`**:
-    - `'hide'` (default): Hide current Neovim session's Rich Presence. Other sessions can still take over.
+    - `'hide'` (default): Hide current Neovim session's presence. Other sessions can still take over.
     - `'idle'`: Set current Neovim session's status to idle.
     - `function`: A custom callback function.
 
@@ -353,10 +353,10 @@ require('cord').setup {
 - **`interval`**:
     - A number (default: `20000`): The background polling interval in milliseconds to check the zellij client attachment state.
 - **`on_attach`**:
-    - `'show'` (default): Restore Rich Presence when a client attaches to the current zellij session.
+    - `'show'` (default): Restore presence when a client attaches to the current zellij session.
     - `function`: A custom callback function.
 - **`on_detach`**:
-    - `'hide'` (default): Hide current Neovim session's Rich Presence. Other sessions can still take over.
+    - `'hide'` (default): Hide current Neovim session's presence. Other sessions can still take over.
     - `'idle'`: Set current Neovim session's status to idle.
     - `function`: A custom callback function.
 
@@ -373,7 +373,7 @@ require('cord').setup {
 
 **Name:** `lastfm`
 
-**Purpose:** Displays your current Last.fm "Now Playing" track in Rich Presence. By default, takes full control of the activity. If you want to disable this behavior, set `override = false`.
+**Purpose:** Displays your current Last.fm "Now Playing" track in presence. By default, takes full control of the activity. If you want to disable this behavior, set `override = false`.
 
 **Requirements:**
 
@@ -409,7 +409,7 @@ require('cord').setup {
 **Usage Example (`override = false`):**
 
 ```lua
-require('cord').setup {
+require('duvet').setup {
   extensions = {
     lastfm = { override = false },
   },

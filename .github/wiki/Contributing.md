@@ -1,6 +1,6 @@
 # 📗 Contribution Guidelines
 
-Thank you for your interest in contributing to cord.nvim! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to duvet.nvim! This document provides guidelines for contributing to the project.
 
 ## TL;DR
 
@@ -14,29 +14,29 @@ Thank you for your interest in contributing to cord.nvim! This document provides
 
 ## Getting Started
 
-If you're new to contributing in general, we recommend starting small by improving the documentation or finding missing mappings and adding them to the appropriate [mappings](./lua/cord/internal/activity/mappings.lua) table.
+If you're new to contributing in general, we recommend starting small by improving the documentation or finding missing mappings and adding them to the appropriate [mappings](./lua/duvet/internal/activity/mappings.lua) table.
 
 ## Project Overview
 
-### Lua runtime: `lua/cord/`
+### Lua runtime: `lua/duvet/`
 The Neovim-side implementation: configuration, activity detection, hooks, built-in extensions, and orchestration with the server.
 
 <details>
 <summary><strong>Expand</strong></summary>
 
-- `lua/cord/api/`
+- `lua/duvet/api/`
   - `config/`: Runtime config layer, defaults and validation.
   - `log/`: Logging backends
     - `init.lua`: Logger facade.
     - `file.lua`: File logger.
     - `notify.lua`: `:messages` logger.
-  - `command.lua`: `:Cord ...` user commands.
+  - `command.lua`: `:Duvet ...` user commands.
   - `icon.lua`: Icon API.
-- `lua/cord/core/`
+- `lua/duvet/core/`
   - `async/`: Async/Futures helpers on top of coroutines.
   - `uv/`: Thin wrappers over libuv based on the Futures system above.
   - `util/`: Utility functions used throughout the codebase.
-- `lua/cord/internal/`
+- `lua/duvet/internal/`
   - `activity/`
     - `builder.lua`: Aggregates the activity subsystem, builds the Activity object.
     - `mappings.lua`: Buffer/filetype/context mappings.
@@ -44,9 +44,9 @@ The Neovim-side implementation: configuration, activity detection, hooks, built-
   - `constants/`: Constants and enums used across the plugin.
   - `manager.lua`: Builds/schedules/sends activities; idle handling; queueing.
   - `hooks.lua`: Hook registration and execution used by the manager.
-- `lua/cord/extensions/`: Built-in extensions.
+- `lua/duvet/extensions/`: Built-in extensions.
   - `init.lua`: Extension API.
-- `lua/cord/server/`
+- `lua/duvet/server/`
   - `init.lua`: High-level server lifecycle: connect, restart, shutdown, and integration with events.
   - `ipc/`: Message bus between Lua and Rust server.
   - `spawn/`: Spawning the server process.
@@ -56,7 +56,7 @@ The Neovim-side implementation: configuration, activity detection, hooks, built-
 </details>
 
 ### Rust server: `src/`
-Discord IPC, message protocol, session management, cross-platform pipes and some other features that require a common server between instances.
+Duvet IPC, message protocol, session management, cross-platform pipes and some other features that require a common server between instances.
 
 <details>
 <summary><strong>Expand</strong></summary>
@@ -64,13 +64,13 @@ Discord IPC, message protocol, session management, cross-platform pipes and some
 - `cord.rs`: Server runtime: session lifecycle, event loop, and client coordination.
 - `cli/`: CLI arguments and error handling.
 - `ipc/`
-  - `discord/`: Discord RPC client.
+  - `duvet/`: Duvet IPC client.
   - `pipe/`: Cross-platform pipe layer used to communicate with Neovim Lua plugin.
 - `messages/` Events/messages.
   - `events/client/`: Messages from Lua -> server (`connect`, `initialize`, `update_activity`, `clear_activity`, `disconnect`, `shutdown`).
   - `events/server/`: Messages from server -> Lua (`ready`, `log`, `disconnect`).
   - `events/local/`: Internal messaging.
-- `presence/` Discord Rich Presence models.
+- `presence/` Presence models.
   - `activity.rs`: Activity object.
   - `packet.rs`: Packet with the Activity object.
 - `protocol/`
@@ -91,15 +91,15 @@ Discord IPC, message protocol, session management, cross-platform pipes and some
 
 1. Clone the repositoy:
    ```bash
-   git clone https://github.com/vyfor/cord.nvim
+   git clone https://github.com/chikof/duvet.nvim
    ```
 
 2. Load the plugin, this is easiest with a plugin manager (e.g. `lazy.nvim`):
 
 ```lua
 {
-  'vyfor/cord.nvim',
-  dir = 'path/to/cloned/cord.nvim',
+  'chikof/duvet.nvim',
+  dir = 'path/to/cloned/duvet.nvim',
   -- see https://github.com/vyfor/cord.nvim/wiki/Build for building the server from source
 }
 ```

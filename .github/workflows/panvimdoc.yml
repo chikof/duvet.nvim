@@ -30,7 +30,7 @@ jobs:
 
       - uses: kdheepak/panvimdoc@main
         with:
-          vimdoc: cord
+          vimdoc: duvet
           pandoc: _README.md
           version: "NVIM v0.6.0"
           demojify: true
@@ -43,4 +43,4 @@ jobs:
           commit_message: "chore(docs): update vimdoc [skip ci]"
           branch: ${{ github.head_ref }}
           skip_dirty_check: true
-          file_pattern: doc/cord.txt
+          file_pattern: doc/duvet.txt

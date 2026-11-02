@@ -7,7 +7,7 @@ module.exports = {
       "channel": "beta"
     }
   ],
-  "repositoryUrl": "https://github.com/vyfor/cord.nvim",
+  "repositoryUrl": "https://github.com/chikof/duvet.nvim",
   "plugins": [
     [
       "@semantic-release/release-notes-generator",

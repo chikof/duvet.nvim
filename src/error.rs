@@ -4,7 +4,7 @@ use std::string::ParseError;
 use std::{fmt, io};
 
 use crate::cli::error::CliError;
-use crate::ipc::discord::error::DiscordError;
+use crate::ipc::duvet::error::IpcError;
 use crate::protocol::error::ProtocolError;
 
 /// Enumerates error types: IO, parsing, protocol, CLI, and others.
@@ -18,8 +18,8 @@ pub enum CordErrorKind {
     Protocol,
     /// Errors related to CLI operations.
     Cli,
-    /// Errors related to Discord operations.
-    Discord,
+    /// Errors related to IPC operations.
+    Ipc,
     /// Other errors.
     Other,
 }
@@ -95,9 +95,9 @@ impl From<CliError> for CordError {
     }
 }
 
-impl From<DiscordError> for CordError {
-    fn from(err: DiscordError) -> Self {
-        Self::new(CordErrorKind::Discord, err)
+impl From<IpcError> for CordError {
+    fn from(err: IpcError) -> Self {
+        Self::new(CordErrorKind::Ipc, err)
     }
 }
 

@@ -3,7 +3,7 @@ use std::sync::{Arc, RwLock};
 use std::thread;
 use std::time::{Duration, Instant};
 
-use crate::ipc::discord::client::RichClient;
+use crate::ipc::duvet::client::RichClient;
 use crate::presence::activity::Activity;
 use crate::presence::packet::Packet;
 use crate::types::config::{SyncConfig, SyncMode};
@@ -27,10 +27,8 @@ pub struct ActivityManager {
 }
 
 impl ActivityManager {
-    pub fn new(client_id: u64, pipe_paths: Vec<String>) -> Self {
-        debug!("Creating ActivityManager with client_id={}", client_id);
-        let client =
-            Arc::new(RwLock::new(RichClient::new(client_id, pipe_paths)));
+    pub fn new(pipe_paths: Vec<String>) -> Self {
+        let client = Arc::new(RwLock::new(RichClient::new(pipe_paths)));
         let last_activity = Arc::new(RwLock::new(None));
         let last_update = Arc::new(RwLock::new(Instant::now()));
         let last_periodic_sync = Arc::new(RwLock::new(Instant::now()));
@@ -103,10 +101,7 @@ impl ActivityManager {
                                         &mut padded_activity.state,
                                     );
                                 }
-                                let packet = Packet::new(
-                                    client_guard.pid,
-                                    Some(&padded_activity),
-                                );
+                                let packet = Packet::Set(&padded_activity);
                                 let _ = client_guard.update(&packet);
                             } else {
                                 trace!("Periodic sync: clearing activity");
@@ -139,10 +134,7 @@ impl ActivityManager {
                                                 &mut activity.state,
                                             );
                                         }
-                                        let packet = Packet::new(
-                                            client_guard.pid,
-                                            Some(&activity),
-                                        );
+                                        let packet = Packet::Set(&activity);
                                         let _ = client_guard.update(&packet);
                                     }
                                     PendingOp::Clear => {
@@ -183,7 +175,7 @@ impl ActivityManager {
                     || Instant::now().duration_since(*last_update) >= interval
                 {
                     debug!(
-                        "Sending activity update to Discord (defer mode, immediate)"
+                        "Sending activity update to Duvet (defer mode, immediate)"
                     );
                     let client = self.client.read().unwrap();
                     let mut padded_activity = activity.clone();
@@ -191,8 +183,7 @@ impl ActivityManager {
                         pad_activity_field(&mut padded_activity.details);
                         pad_activity_field(&mut padded_activity.state);
                     }
-                    let packet =
-                        Packet::new(client.pid, Some(&padded_activity));
+                    let packet = Packet::Set(&padded_activity);
                     client.update(&packet)?;
                     *last_update = Instant::now();
                     *self.pending_op.write().unwrap() = None;
@@ -204,27 +195,27 @@ impl ActivityManager {
                 *self.last_activity.write().unwrap() = Some(activity);
             }
             (true, SyncMode::Periodic) => {
-                debug!("Sending activity update to Discord (periodic mode)");
+                debug!("Sending activity update to Duvet (periodic mode)");
                 let client = self.client.read().unwrap();
                 let mut padded_activity = activity.clone();
                 if config.pad {
                     pad_activity_field(&mut padded_activity.details);
                     pad_activity_field(&mut padded_activity.state);
                 }
-                let packet = Packet::new(client.pid, Some(&padded_activity));
+                let packet = Packet::Set(&padded_activity);
                 client.update(&packet)?;
                 *self.last_update.write().unwrap() = Instant::now();
                 *self.last_activity.write().unwrap() = Some(activity);
             }
             (false, _) => {
-                debug!("Sending activity update to Discord (sync disabled)");
+                debug!("Sending activity update to Duvet (sync disabled)");
                 let client = self.client.read().unwrap();
                 let mut padded_activity = activity.clone();
                 if config.pad {
                     pad_activity_field(&mut padded_activity.details);
                     pad_activity_field(&mut padded_activity.state);
                 }
-                let packet = Packet::new(client.pid, Some(&padded_activity));
+                let packet = Packet::Set(&padded_activity);
                 client.update(&packet)?;
             }
         }
@@ -244,7 +235,7 @@ impl ActivityManager {
                 if is_first
                     || Instant::now().duration_since(*last_update) >= interval
                 {
-                    debug!("Clearing Discord activity (defer mode, immediate)");
+                    debug!("Clearing Duvet activity (defer mode, immediate)");
                     self.client.read().unwrap().clear()?;
                     *last_update = Instant::now();
                     *self.pending_op.write().unwrap() = None;
@@ -255,7 +246,7 @@ impl ActivityManager {
                 *self.last_activity.write().unwrap() = None;
             }
             _ => {
-                debug!("Clearing Discord activity");
+                debug!("Clearing Duvet activity");
                 self.client.read().unwrap().clear()?;
                 *self.last_activity.write().unwrap() = None;
                 *self.last_update.write().unwrap() = Instant::now();

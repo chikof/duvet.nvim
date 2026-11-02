@@ -20,7 +20,6 @@ fn main() -> Result<()> {
     let args = Args::parse()?;
     let config = Config::new(
         args.pipe_name,
-        args.client_id,
         args.timeout,
         args.reconnect_interval,
         args.initial_reconnect,

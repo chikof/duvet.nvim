@@ -3,7 +3,7 @@ use std::sync::Arc;
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::time::Duration;
 
-use crate::ipc::discord::client::Connection;
+use crate::ipc::duvet::client::Connection;
 use crate::ipc::pipe::PipeServerImpl;
 use crate::ipc::pipe::platform::server::PipeServer;
 use crate::messages::events::event::{Event, EventContext, OnEvent};
@@ -17,9 +17,9 @@ use crate::util::lockfile::ServerLock;
 use crate::util::logger::{self, LOGGER, LogLevel, Logger};
 use crate::{debug, trace};
 
-pub const VERSION: &str = env!("CORD_VERSION");
+pub const VERSION: &str = env!("DUVET_VERSION");
 
-/// Core application managing configuration, sessions, IPC with Discord, and logging.
+/// Core application managing configuration, sessions, IPC with Duvet, and logging.
 ///
 /// # Fields
 /// * `config`: Configuration settings.
@@ -51,7 +51,7 @@ impl Cord {
         let _ = logger::LOGGER.set(Logger::new(tx.clone(), LogLevel::Trace));
         debug!("cord server v{}", VERSION);
 
-        let activity_manager = ActivityManager::new(config.client_id, vec![]);
+        let activity_manager = ActivityManager::new(vec![]);
 
         let server = PipeServer::new(
             &config.server_pipe,
@@ -167,7 +167,6 @@ impl Cord {
 /// Manages application settings required for initialization.
 pub struct Config {
     pub server_pipe: String,
-    pub client_id: u64,
     pub timeout: u64,
     pub reconnect_interval: u64,
     pub initial_reconnect: bool,
@@ -178,7 +177,6 @@ impl Config {
     /// Creates a new configuration.
     pub fn new(
         server_pipe: String,
-        client_id: u64,
         timeout: u64,
         reconnect_interval: u64,
         initial_reconnect: bool,
@@ -186,7 +184,6 @@ impl Config {
     ) -> Self {
         Self {
             server_pipe,
-            client_id,
             timeout,
             reconnect_interval,
             initial_reconnect,

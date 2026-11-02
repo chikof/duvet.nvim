@@ -33,10 +33,7 @@ impl OnEvent for UpdateActivityEvent {
             .is_ready
             .load(Ordering::SeqCst)
         {
-            debug!(
-                ctx.client_id,
-                "Ignoring activity update: Discord not ready"
-            );
+            debug!(ctx.client_id, "Ignoring activity update: Duvet not ready");
             return Ok(());
         }
 

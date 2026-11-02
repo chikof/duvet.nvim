@@ -1,13 +1,13 @@
 # 📂 Custom Assets
 
-Cord allows you to go beyond the default icons and fully customize the assets used in your Discord Rich Presence. This guide will walk you through how to override and define custom assets.
+Duvet allows you to go beyond the default icons and fully customize the assets used in your presence. This guide will walk you through how to override and define custom assets.
 
 ## 🛠️ Structure
 
-Custom assets are configured within the `assets` table in your `cord.setup()` call. The basic structure is as follows:
+Custom assets are configured within the `assets` table in your `duvet.setup()` call. The basic structure is as follows:
 
 ```lua
-require('cord').setup {
+require('duvet').setup {
   assets = {
     -- "key" = "icon" or { asset_options }
   },
@@ -23,7 +23,7 @@ The `key` in your asset configuration determines what type of file or context th
 - **Filetype**: Use a Vim filetype string (e.g., `"lua"`, `"python"`) to set assets for specific languages.
 - **Filename**: Use a specific filename (e.g., `"Cargo.toml"`, `"README.md"`) to customize assets for particular files.
 - **File Extension**: Use a file extension (e.g., `".rs"`, `".js"`) to apply assets to all files with that extension.
-- **Special Keys**: Cord provides special keys for generic scenarios (see [Overriding Defaults](#-overriding-defaults)).
+- **Special Keys**: Duvet provides special keys for generic scenarios (see [Overriding Defaults](#-overriding-defaults)).
 
 ## ⚙️ Asset Options
 
@@ -31,15 +31,15 @@ When you use a table as the `value` in your asset configuration, you can specify
 
 | Option    | Type                  | Description                                                                                                  |
 | --------- | --------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `icon`    | `string \| function ` | A direct URL to the icon image or the name of a rich presence asset (if using your own Discord application). |
-| `tooltip` | `string \| function`  | Text that appears when you hover over the icon in Discord.                                                   |
+| `icon`    | `string \| function ` | A direct URL to the icon image. |
+| `tooltip` | `string \| function`  | Text that appears when you hover over the icon in Duvet.                                                   |
 | `name`    | `string \| function`  | An optional override for the icon's name. Generally used for types other than `language`.                    |
 | `text`    | `string \| function`  | An optional override for the icon's text. **Completely replaces** the default text.                          |
 | `type`    | `string`              | Specifies the context of the asset.  See [Asset Types](#asset-types) for available options.                  |
 
 ### Asset Types
 
-The `type` option categorizes your asset, influencing how Cord displays it. Available types include:
+The `type` option categorizes your asset, influencing how Duvet displays it. Available types include:
 - `language` (default)
 - `docs`
 - `plugin_manager`
@@ -80,15 +80,15 @@ assets = {
 
 This example sets a custom icon and tooltip specifically for Lua files (the `lua` filetype).
 
-**3. Using Cord's Built-in Icons:**
+**3. Using Duvet's Built-in Icons:**
 
 ```lua
 assets = {
-  ['.settings'] = require('cord.api.icon').get('settings'),
+  ['.settings'] = require('duvet.api.icon').get('settings'),
 }
 ```
 
-This makes use of Cord's default icon library, using the "settings" icon for files with the `.settings` extension.
+This makes use of Duvet's default icon library, using the "settings" icon for files with the `.settings` extension.
 
 **4. Plugin Manager Asset with Custom Text:**
 
@@ -119,23 +119,23 @@ assets = {
 }
 ```
 
-This example only modifies the tooltip and text for Lua files, keeping Cord's default icon.
+This example only modifies the tooltip and text for Lua files, keeping Duvet's default icon.
 
 ## 🧰 Overriding Defaults
 
-Cord provides special keys to define assets for generic situations:
+Duvet provides special keys to define assets for generic situations:
 
-- `['Cord.new']`: Asset for a new, empty buffer when Neovim starts without file arguments, when both filetype and filename are empty.
-- `['Cord.unknown']`: Asset when the filetype is not detected/defined in Cord.
-- `['Cord.override']`: This key overrides *all* existing icons, applying the specified asset everywhere.
+- `['Duvet.new']`: Asset for a new, empty buffer when Neovim starts without file arguments, when both filetype and filename are empty.
+- `['Duvet.unknown']`: Asset when the filetype is not detected/defined in Duvet.
+- `['Duvet.override']`: This key overrides *all* existing icons, applying the specified asset everywhere.
 
 **Example of Default Overrides:**
 
 ```lua
 assets = {
-  ['Cord.new'] = 'default_file_icon',
-  ['Cord.unknown'] = 'question_mark_icon',
-  ['Cord.override'] = 'my_brand_icon',
+  ['Duvet.new'] = 'default_file_icon',
+  ['Duvet.unknown'] = 'question_mark_icon',
+  ['Duvet.override'] = 'my_brand_icon',
 }
 ```
 

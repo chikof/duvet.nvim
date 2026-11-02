@@ -2,7 +2,7 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
-use crate::ipc::discord::client::Connection;
+use crate::ipc::duvet::client::Connection;
 use crate::ipc::pipe::PipeServerImpl;
 use crate::messages::events::event::{EventContext, OnEvent};
 use crate::messages::events::local::ReconnectCompleteEvent;
@@ -82,37 +82,18 @@ impl OnEvent for ReconnectEvent {
                 }
 
                 let mut rich_client =
-                    crate::ipc::discord::client::RichClient::new(
-                        client.client_id,
+                    crate::ipc::duvet::client::RichClient::new(
                         client.pipe_paths.clone(),
                     );
 
                 match rich_client.connect() {
-                    Ok(()) => match rich_client.handshake() {
-                        Ok(()) => {
-                            if let Err(e) =
-                                rich_client.start_read_thread(tx.clone())
-                            {
-                                debug!(
-                                    client_id,
-                                    "Reconnect: start_read_thread failed: {}",
-                                    e
-                                );
-                                rich_client.close();
-                                if !manual && interval > 0 {
-                                    continue;
-                                }
-                                result = Err(e);
-                                break;
-                            }
-                            debug!(client_id, "Reconnected to Discord");
-                            *client = rich_client;
-                            break;
-                        }
-                        Err(e) => {
+                    Ok(()) => {
+                        if let Err(e) =
+                            rich_client.start_read_thread(tx.clone())
+                        {
                             debug!(
                                 client_id,
-                                "Reconnect: handshake failed: {}", e
+                                "Reconnect: start_read_thread failed: {}", e
                             );
                             rich_client.close();
                             if !manual && interval > 0 {
@@ -121,7 +102,10 @@ impl OnEvent for ReconnectEvent {
                             result = Err(e);
                             break;
                         }
-                    },
+                        debug!(client_id, "Reconnected to Duvet");
+                        *client = rich_client;
+                        break;
+                    }
                     Err(e) => {
                         debug!(client_id, "Reconnect: connect failed: {}", e);
                         if !manual && interval > 0 {

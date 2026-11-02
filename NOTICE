@@ -1,0 +1,10 @@
+duvet.nvim
+Copyright vyfor and cord.nvim contributors (original work)
+
+This product is a fork of cord.nvim (https://github.com/vyfor/cord.nvim),
+created by vyfor and contributors, and is distributed under the Apache License,
+Version 2.0 (see LICENSE).
+
+Modifications: the server publishes activity to Duvet over its local presence
+socket instead of Discord IPC, and the project was renamed from cord.nvim to
+duvet.nvim.

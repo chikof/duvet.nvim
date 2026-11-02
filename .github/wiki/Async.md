@@ -1,8 +1,8 @@
 # ⏳ Async Configuration
 
-Cord provides an asynchronous runtime that allows for non-blocking I/O operations within your configuration. This enables you to perform expensive tasks - running commands, reading files, or fetching APIs in the background.
+Duvet provides an asynchronous runtime that allows for non-blocking I/O operations within your configuration. This enables you to perform expensive tasks - running commands, reading files, or fetching APIs in the background.
 
-This guide explains how to leverage the `cord.core.async` module to write non-blocking configuration functions.
+This guide explains how to leverage the `duvet.core.async` module to write non-blocking configuration functions.
 
 ## 📖 Table of Contents
   - [Core Concepts](#-core-concepts)
@@ -53,9 +53,9 @@ local content = fs.readfile('config.json'):await()
 
 ## 💾 Caching
 
-Since Cord re-runs your config frequently to detect changes (on buffer change, cursor move, etc.), repeating expensive async operations is wasteful.
+Since Duvet re-runs your config frequently to detect changes (on buffer change, cursor move, etc.), repeating expensive async operations is wasteful.
 
-Cord provides a global cache instance available as `opts.cache` in your functions.
+Duvet provides a global cache instance available as `opts.cache` in your functions.
 
 ```lua
 -- fetch value, OR compute and cache it for 60 seconds
@@ -102,7 +102,7 @@ local content = fs.readfile('critical_data.txt'):unwrap()
 When you call an async function *without* awaiting it, it starts executing immediately in the background. To run multiple operations concurrently, start them all first, then use `Future.all` to wait for the results.
 
 > [!NOTE]
-> Unlike "lazy" async models (like Rust or Python) where a task only starts when you await it, Cord's model is **eager**. The task begins the moment the function is called. This allows for easy concurrency and fire-and-forget patterns.
+> Unlike "lazy" async models (like Rust or Python) where a task only starts when you await it, Duvet's model is **eager**. The task begins the moment the function is called. This allows for easy concurrency and fire-and-forget patterns.
 
 **Sequential (Slow):**
 ```lua
@@ -115,7 +115,7 @@ local status = get_status():await()
 
 **Concurrent (Fast):**
 ```lua
-local Future = require('cord.core.async.future')
+local Future = require('duvet.core.async.future')
 
 -- both operations start running immediately in the background
 local branch_fut = get_branch()
@@ -131,9 +131,9 @@ local branch, status = results[1], results[2]
 
 ## 📦 Available Modules
 
-Cord exposes internal libuv wrappers for common tasks via `cord.core.uv`.
+Duvet exposes internal libuv wrappers for common tasks via `duvet.core.uv`.
 
-### `cord.core.uv.process` (Subprocess)
+### `duvet.core.uv.process` (Subprocess)
 Used for running external commands (git, gh, curl, etc.).
 
 - `spawn(opts)`: Spawns a process. Returns a Future resolving to `{ code, signal, stdout, stderr, pid }`.
@@ -142,7 +142,7 @@ Used for running external commands (git, gh, curl, etc.).
   - `opts.cwd` (string): Working directory
   - `opts.env` (table): Environment variables
 
-### `cord.core.uv.fs` (Filesystem)
+### `duvet.core.uv.fs` (Filesystem)
 Async wrappers for file operations. All return Futures.
 
 **High-Level:**
@@ -159,7 +159,7 @@ Async wrappers for file operations. All return Futures.
 - `write(fd, data)`: Writes to fd.
 - `closefile(fd)`: Closes fd.
 
-### `cord.core.uv.pipe` (IPC)
+### `duvet.core.uv.pipe` (IPC)
 For communicating with sockets/pipes.
 
 - `IPC.new()`: Creates a new IPC instance.
@@ -177,10 +177,10 @@ For communicating with sockets/pipes.
 Fetch the current Git branch asynchronously with caching.
  
 ```lua
-local async = require('cord.core.async')
-local process = require('cord.core.uv.process')
+local async = require('duvet.core.async')
+local process = require('duvet.core.uv.process')
  
-require('cord').setup {
+require('duvet').setup {
   variables = {
     git_branch = async.wrap(function(opts)
       -- run git command only once every 30 seconds
@@ -210,51 +210,13 @@ require('cord').setup {
 }
 ```
 
-### Dynamic Button URL
- 
-Display a button with a URL that is only available if the repository is not private. Since repository privacy rarely changes, we cache this for 5 minutes.
- 
-```lua
-local async = require('cord.core.async')
-local process = require('cord.core.uv.process')
- 
-require('cord').setup {
-  buttons = {
-    {
-      label = 'View Repository',
-      url = async.wrap(function(opts)
-        -- check visibility only once every 5 minutes
-        local is_private = opts.cache:get_or_compute(opts.workspace_dir .. ':is_repo_private', 300, function()
-          local result = process.spawn({
-            cmd = 'gh',
-            args = { 'repo', 'view', '--json', 'isPrivate', '--template', '{{.isPrivate}}' },
-            cwd = opts.workspace_dir
-          }):await()
-  
-          -- assume private if command fails
-          if not result or result.code ~= 0 then
-            -- we must return a non-nil value
-            return false
-          end
-          return vim.trim(result.stdout)
-        end)
-  
-        if is_private == 'true' then return end -- hide button for private repos
-        
-        return opts.repo_url
-      end)
-    }
-  }
-}
-```
-
 ### ⚠️ Common Pitfalls
 
 1.  **Blocking Calls inside Async Wrapper**:
-    Wrapping a function with `async.wrap` does not magically make existing blocking APIs (like `vim.fn.system`, `io.popen`, or `os.execute`) non-blocking. These functions will still freeze the UI. You must use the provided `cord.core.uv` modules or write your own async wrappers. In contrast, if your task does not involve I/O, there is no need to use async at all.
+    Wrapping a function with `async.wrap` does not magically make existing blocking APIs (like `vim.fn.system`, `io.popen`, or `os.execute`) non-blocking. These functions will still freeze the UI. You must use the provided `duvet.core.uv` modules or write your own async wrappers. In contrast, if your task does not involve I/O, there is no need to use async at all.
 
 2.  **Forgetting `async.wrap`**:
     Calling `:await()` requires a running coroutine. If you try to use it in a standard Lua function, you will receive an error.
 
 3.  **Spawning Processes Too Frequently**:
-    Cord may run your configuration functions very frequently (depending on your config). Spawning a process dozens of times a minute is expensive. Please [cache](#-caching) your results to avoid this.
+    Duvet may run your configuration functions very frequently (depending on your config). Spawning a process dozens of times a minute is expensive. Please [cache](#-caching) your results to avoid this.

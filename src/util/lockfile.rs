@@ -26,7 +26,7 @@ impl ServerLock {
 
     fn get_lock_path() -> Result<PathBuf> {
         let mut path = env::temp_dir();
-        path.push("cord-server.lock");
+        path.push("duvet-server.lock");
 
         Ok(path)
     }

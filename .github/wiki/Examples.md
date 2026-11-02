@@ -1,48 +1,16 @@
 # 🎨 Examples
 
-Learn how to customize your Discord presence with examples. The possibilities are endless, and the only limit is your creativity!
+Learn how to customize your presence with examples. The possibilities are endless, and the only limit is your creativity!
 
 ## 🚀 Getting Started
 
-### Enabling the repository button
+### Reconnecting to Duvet
 
-```lua
-require('cord').setup {
-  buttons = {
-    {
-      label = 'View Repository',
-      url = function(opts)
-        return opts.repo_url -- only show the button if a repo URL is found
-      end,
-    },
-  },
-}
-```
-
-### Using a custom name for your presence
-
-The text next to "Playing" (e.g. *"Neovim"*) comes from the Discord
-application Cord connects to. To show a custom name, create an application in
-the [Discord Developer Portal](https://discord.com/developers/applications),
-then pass its application ID as `editor.client`:
-
-```lua
-editor = {
-  client = '1234567890123456789',
-  -- icon = 'https://...', -- optional icon override
-},
-```
-
->[!NOTE]
-> Changing `editor.client` takes effect after `:Cord restart`.
-
-### Reconnecting to Discord
-
-Cord can automatically reconnect to Discord in case the active connection is lost. This is also useful in cases where Neovim happens to be started earlier than Discord.
+Duvet can automatically reconnect to Duvet in case the active connection is lost. This is also useful in cases where Neovim happens to be started earlier than the Duvet app.
 
 ```lua
 advanced = {
-  discord = {
+  duvet = {
     reconnect = {
       enabled = true,
     },
@@ -52,7 +20,7 @@ advanced = {
 
 ## 🎨 Appearance
 
-Cord provides 120+ icons across several themes, each with `dark`, `light`, and
+Duvet provides 120+ icons across several themes, each with `dark`, `light`, and
 `accent` flavors. See [Themes](https://github.com/vyfor/cord.nvim?tab=readme-ov-file#-themes).
 
 ```lua
@@ -105,12 +73,12 @@ display = {
 
 ### Customizing the idle icon
 
-The idle icon accepts any of Cord's built-in icons (across any theme/flavor) or
+The idle icon accepts any of Duvet's built-in icons (across any theme/flavor) or
 a direct URL:
 
 ```lua
 opts = function()
-  local icon = require('cord.api.icon')
+  local icon = require('duvet.api.icon')
 
   return {
     idle = {
@@ -234,55 +202,9 @@ text = {
 },
 ```
 
-## 🕹️ Buttons
-
-You can show up to **two** buttons. Each button needs a `label` and a `url`.
-
-### A static button
-
-```lua
-buttons = {
-  {
-    label = 'My Website',
-    url = 'https://example.com',
-  },
-},
-```
-
-### Dynamic label and URL
-
-```lua
-buttons = {
-  {
-    label = function(opts)
-      return opts.repo_url and 'View Repository' or 'My Website'
-    end,
-    url = function(opts)
-      return opts.repo_url or 'https://example.com'
-    end,
-  },
-},
-```
-
-### Hiding a button conditionally
-
-If a button's either field returns `nil`, that button is dropped. For example, hiding the repository button when the instance is idle:
-
-```lua
-buttons = {
-  {
-    label = 'View Repository',
-    url = function(opts)
-      if opts.is_idle then return end -- no button while idle
-      return opts.repo_url
-    end,
-  },
-},
-```
-
 ## 💤 Idle Behavior
 
-Cord switches to an idle presence after `idle.timeout` milliseconds of
+Duvet switches to an idle presence after `idle.timeout` milliseconds of
 inactivity. You can fully customize what it shows.
 
 ### Custom idle messages
@@ -337,7 +259,7 @@ See [Assets Wiki](./Assets.md) for more details and examples.
 To keep certain workspaces hidden from your presence, use the [Visibility extension](./Extensions.md#-visibility):
 
 ```lua
-require('cord').setup {
+require('duvet').setup {
   extensions = {
     visibility = {
       rules = {
@@ -367,35 +289,9 @@ hooks = {
 },
 ```
 
-### Make certain fields clickable
-
-Text:
-
-```lua
-hooks = {
-  post_activity = function(opts, activity)
-    if opts.repo_url then
-      activity.details_url = opts.repo_url
-    end
-  end,
-},
-```
-
-Images:
-
-```lua
-hooks = {
-  post_activity = function(opts, activity)
-    if opts.repo_url then
-      activity.assets.large_url = opts.repo_url
-    end
-  end,
-},
-```
-
 ### Change the activity type
 
-By default Cord shows up as *"Playing Neovim"*. You can switch it to *"Listening to ..."*, *"Watching ..."*, or *"Competing in ..."* with:
+The displayed name is always *"Neovim"*. You can change the activity verb to *"Listening to ..."*, *"Watching ..."*, or *"Competing in ..."* with:
 
 ```lua
 hooks = {
@@ -405,35 +301,18 @@ hooks = {
 },
 ```
 
-### Change the shown activity field
-
-Rich Presence can be configured to show what appears on your status line:
-- Application Name: *"Playing Neovim"* (default)
-- Details: *"Editing main.lua"*
-- State: *"In workspace"*
-
-![Member list](https://github.com/vyfor/icons/blob/master/.github/assets/demo_profile.png?raw=true)
-
-```lua
-hooks = {
-  post_activity = function(opts, activity)
-    activity.status_display_type = 'name' -- 'name' | 'details' | 'state'
-  end,
-},
-```
-
 ## ⏳ Going Further with Async
 
-For anything that touches the filesystem or runs a command, you should use Cord's [async runtime](./Async.md) to avoid blocking the UI thread.
-Do not forget to cache the output, as Cord re-runs your config frequently.
+For anything that touches the filesystem or runs a command, you should use Duvet's [async runtime](./Async.md) to avoid blocking the UI thread.
+Do not forget to cache the output, as Duvet re-runs your config frequently.
 
 ### Show the current Git branch
 
 ```lua
-local async = require('cord.core.async')
-local process = require('cord.core.uv.process')
+local async = require('duvet.core.async')
+local process = require('duvet.core.uv.process')
  
-require('cord').setup {
+require('duvet').setup {
   variables = {
     git_branch = async.wrap(function(opts)
       -- run git command only once every 30 seconds
@@ -461,38 +340,6 @@ require('cord').setup {
     end)
   },
 }
-```
-
-### Hide the repository button for private repositories
-
-```lua
-buttons = {
-  {
-    label = 'View Repository',
-    url = async.wrap(function(opts)
-      local is_private = opts.cache:get_or_compute(
-        opts.workspace_dir .. ':is_repo_private',
-        300,
-        function()
-          local result = processd 
-            .spawn({
-              cmd = 'gh',
-              args = { 'repo','view', '--json', 'isPrivate', '--template', '{{.isPrivate}}' },
-              cwd = opts.workspace_dir,
-            })
-            :await()
-
-          if not result or result.code ~= 0 then return false end
-          return vim.trim(result.stdout)
-        end
-      )
-
-      if is_private == 'true' then return end
-
-      return opts.repo_url
-    end),
-  },
-},
 ```
 
 ### Commits ahead upstream
@@ -524,4 +371,4 @@ text = {
 > [!IMPORTANT]
 > See the [Async Wiki](./Async.md) for an in-depth explanation, including caching and error handling.
 
-Share your snippets in [GitHub Discussions](https://github.com/vyfor/cord.nvim/discussions) or our [Discord community](https://discord.gg/q9rC4bjCHv)!
+Share your snippets in [GitHub Discussions](https://github.com/vyfor/cord.nvim/discussions)!

@@ -29,23 +29,23 @@ impl Deserialize for TimestampConfig {
 
 #[derive(Debug, Clone, Default)]
 pub struct AdvancedConfig {
-    pub discord: AdvancedDiscordConfig,
+    pub duvet: AdvancedDuvetConfig,
 }
 
 impl Deserialize for AdvancedConfig {
     fn deserialize<'a>(input: Value) -> crate::Result<Self> {
         let mut input = input.take_map().ok_or("Invalid config")?;
 
-        let discord = remove_field!(input, "discord", |v| {
-            AdvancedDiscordConfig::deserialize(v).ok()
+        let duvet = remove_field!(input, "duvet", |v| {
+            AdvancedDuvetConfig::deserialize(v).ok()
         });
 
-        Ok(AdvancedConfig { discord })
+        Ok(AdvancedConfig { duvet })
     }
 }
 
 #[derive(Debug, Clone, Default)]
-pub struct AdvancedDiscordConfig {
+pub struct AdvancedDuvetConfig {
     pub pipe_paths: Vec<String>,
     pub sync: SyncConfig,
 }
@@ -110,7 +110,7 @@ impl Deserialize for SyncConfig {
     }
 }
 
-impl Deserialize for AdvancedDiscordConfig {
+impl Deserialize for AdvancedDuvetConfig {
     fn deserialize<'a>(input: Value) -> crate::Result<Self> {
         let mut input = input.take_map().ok_or("Invalid config")?;
 
@@ -119,7 +119,7 @@ impl Deserialize for AdvancedDiscordConfig {
                 arr.into_iter()
                     .map(|v| {
                         v.take_string()
-                            .ok_or("Invalid discord pipe path: not a string")
+                            .ok_or("Invalid duvet pipe path: not a string")
                     })
                     .collect::<Result<Vec<String>, _>>()
                     .ok()
@@ -132,7 +132,7 @@ impl Deserialize for AdvancedDiscordConfig {
         })
         .unwrap_or_default();
 
-        Ok(AdvancedDiscordConfig { pipe_paths, sync })
+        Ok(AdvancedDuvetConfig { pipe_paths, sync })
     }
 }
 

@@ -1,12 +1,12 @@
 # 🔌 Extension System
 
-Cord's extension system allows you to extend its functionality and customize it in modular and reusable ways.
+Duvet's extension system allows you to extend its functionality and customize it in modular and reusable ways.
 
-This guide will walk you through creating Cord extensions.
+This guide will walk you through creating Duvet extensions.
 
 ## 🛠️ Extension Structure: Building Blocks
 
-A Cord extension is essentially a Lua module that returns a table defining its components. There are two main ways to structure your extension:
+A Duvet extension is essentially a Lua module that returns a table defining its components. There are two main ways to structure your extension:
 
 ### 1. Simple Table Extension: For Basic Extensions
 
@@ -77,9 +77,9 @@ return M
 
 - Use short, descriptive names for extensions
 - Provide a description of what the extension does
-- Do not override critical parts of Cord's configuration; only provide what's necessary
+- Do not override critical parts of Duvet's configuration; only provide what's necessary
 - In extension initialization, use `error` to raise errors if user configuration is invalid
-- In extension runtime, use `require('cord.api.log')` to log messages and errors
+- In extension runtime, use `require('duvet.api.log')` to log messages and errors
 - Use function-based configuration over string templates wherever possible. You can still provide custom variables as they are only evaluated when needed
 
 > Example extension: [`diagnostics.lua`](https://github.com/vyfor/cord.nvim/blob/master/lua/cord/extensions/diagnostics.lua)

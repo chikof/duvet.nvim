@@ -54,7 +54,7 @@ jobs:
           npm install -g @semantic-release/exec
           npm install -g @semantic-release-cargo/semantic-release-cargo
           npm install -g semantic-release-export-data
-          npx semantic-release --dry-run --repository-url https://github.com/vyfor/cord.nvim
+          npx semantic-release --dry-run --repository-url https://github.com/chikof/duvet.nvim
         id: get-next-version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -109,7 +109,7 @@ jobs:
         run: |
           git pull
 
-      - name: Set CORD_VERSION env
+      - name: Set DUVET_VERSION env
         shell: bash
         run: |
           PREVIOUS_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
@@ -117,7 +117,7 @@ jobs:
             echo "no source changes"
             exit 0
           fi
-          echo "CORD_VERSION=${{ needs.get-next-version.outputs.new-release-version }}" >> $GITHUB_ENV
+          echo "DUVET_VERSION=${{ needs.get-next-version.outputs.new-release-version }}" >> $GITHUB_ENV
 
       - name: Cache Cargo
         uses: actions/cache@v4
@@ -151,7 +151,7 @@ jobs:
           cross build --release --target ${{ matrix.target }}
           New-Item -ItemType Directory -Force -Path dist
           $ARCH = "${{ matrix.target }}" -split '-' | Select-Object -First 1
-          Copy-Item "target/${{ matrix.target }}/release/cord.exe" -Destination "dist/${ARCH}-windows-cord.exe"
+          Copy-Item "target/${{ matrix.target }}/release/duvet.exe" -Destination "dist/${ARCH}-windows-duvet.exe"
           
       - name: Build and copy (Non-Windows)
         if: contains(matrix.target, 'windows') != true
@@ -163,17 +163,17 @@ jobs:
           mkdir -p dist
           ARCH=$(echo ${{ matrix.target }} | cut -d '-' -f 1)
           if [[ "${{ matrix.target }}" == *"linux"* ]]; then
-            cp target/${{ matrix.target }}/release/cord dist/${ARCH}-linux-cord
+            cp target/${{ matrix.target }}/release/duvet dist/${ARCH}-linux-duvet
           elif [[ "${{ matrix.target }}" == *"darwin"* ]]; then
-            cp target/${{ matrix.target }}/release/cord dist/${ARCH}-darwin-cord
+            cp target/${{ matrix.target }}/release/duvet dist/${ARCH}-darwin-duvet
           elif [[ "${{ matrix.target }}" == *"freebsd"* ]]; then
-            cp target/${{ matrix.target }}/release/cord dist/${ARCH}-bsd-cord
+            cp target/${{ matrix.target }}/release/duvet dist/${ARCH}-bsd-duvet
           fi
           
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: cord-server-${{ matrix.target }}
+          name: duvet-server-${{ matrix.target }}
           path: dist/*
 
   merge:
@@ -184,7 +184,7 @@ jobs:
         uses: actions/upload-artifact/merge@v4
         with:
           name: binaries
-          pattern: cord-server-*
+          pattern: duvet-server-*
 
   release:
     runs-on: ubuntu-latest
@@ -243,7 +243,7 @@ jobs:
           npm install -g @semantic-release/exec
           npm install -g @semantic-release-cargo/semantic-release-cargo
           npm install -g semantic-release-export-data
-          npx semantic-release --repository-url https://github.com/vyfor/cord.nvim
+          npx semantic-release --repository-url https://github.com/chikof/duvet.nvim
 
   luarocks:
     name: LuaRocks Publish
@@ -280,8 +280,8 @@ jobs:
           version: ${{ steps.set_version.outputs.version }}
           specrev: ${{ steps.set_version.outputs.rockspec_revision }}
           detailed_description: |
-            Meet the future of rich presence with Cord, the most extensible Discord Rich Presence plugin for Neovim, powered by Rust. 
-            Cord offers a wide range of customization options allowing you to create custom and dynamic experiences that adapt to your needs.
+            Duvet is a presence plugin for Neovim that shows your activity in Duvet, powered by Rust.
+            Duvet offers a wide range of customization options allowing you to create custom and dynamic experiences that adapt to your needs.
             The possibilities are endless, and the only limit is your creativity!
         env:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}

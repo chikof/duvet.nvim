@@ -15,13 +15,13 @@ pub struct StatusUpdateEvent {
 
 #[derive(Debug, Clone, Copy)]
 pub enum Status {
-    /// The client is disconnected from Discord.
+    /// The client is disconnected from Duvet.
     Disconnected,
-    /// The client is connecting to Discord.
+    /// The client is connecting to Duvet.
     Connecting,
-    /// The client is connected to Discord.
+    /// The client is connected to Duvet.
     Connected,
-    /// The client has handshaken with Discord.
+    /// The client has handshaken with Duvet.
     Ready,
 }
 

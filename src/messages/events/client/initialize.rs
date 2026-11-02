@@ -2,7 +2,7 @@ use std::sync::atomic::Ordering;
 
 use crate::debug;
 use crate::error::CordErrorKind;
-use crate::ipc::discord::client::Connection;
+use crate::ipc::duvet::client::Connection;
 use crate::ipc::pipe::PipeServerImpl;
 use crate::local_event;
 use crate::messages::events::event::{EventContext, OnEvent};
@@ -43,22 +43,22 @@ impl OnEvent for InitializeEvent {
 
         ctx.cord
             .activity_manager
-            .set_config(self.config.advanced.discord.sync.clone());
+            .set_config(self.config.advanced.duvet.sync.clone());
 
         let rich_client = &ctx.cord.activity_manager.client;
         let mut client = rich_client.write().unwrap();
-        if !self.config.advanced.discord.pipe_paths.is_empty()
+        if !self.config.advanced.duvet.pipe_paths.is_empty()
             && client.pipe_paths.is_empty()
         {
-            debug!(ctx.client_id, "Setting custom Discord pipe paths");
-            client.pipe_paths = self.config.advanced.discord.pipe_paths.clone();
+            debug!(ctx.client_id, "Setting custom Duvet pipe paths");
+            client.pipe_paths = self.config.advanced.duvet.pipe_paths.clone();
         }
 
         let config = &ctx.cord.config;
         let is_ready = client.is_ready.load(Ordering::SeqCst);
         let has_thread = client.thread_handle.is_some();
         if !has_thread && !is_ready {
-            debug!(ctx.client_id, "Initiating Discord connection");
+            debug!(ctx.client_id, "Initiating Duvet connection");
             client.status = Status::Connecting;
             ctx.cord.pipe.broadcast(&MsgPack::serialize(
                 &StatusUpdateEvent::connecting(),
@@ -81,21 +81,20 @@ impl OnEvent for InitializeEvent {
                     );
                     return Err(crate::error::CordError::new(
                         CordErrorKind::Io,
-                        "Failed to connect to Discord",
+                        "Failed to connect to Duvet",
                     ));
                 }
             } else {
-                debug!(ctx.client_id, "Successfully connected to Discord");
+                debug!(ctx.client_id, "Successfully connected to Duvet");
                 client.status = Status::Connected;
                 ctx.cord.pipe.broadcast(&MsgPack::serialize(
                     &StatusUpdateEvent::connected(),
                 )?)?;
-                client.handshake()?;
                 client.start_read_thread(ctx.cord.tx.clone())?;
             }
         } else {
             if is_ready {
-                debug!(ctx.client_id, "Discord already ready");
+                debug!(ctx.client_id, "Duvet already ready");
                 client.status = Status::Ready;
             }
 

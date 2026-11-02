@@ -9,7 +9,6 @@
   - [⏰ Timestamp](#-timestamp)
   - [💤 Idle](#-idle)
   - [📝 Text](#-text)
-  - [🕹️ Buttons](#️-buttons)
   - [🗃️ Assets](#️-assets)
   - [🧩 Variables](#-variables)
   - [🪝 Hooks](#-hooks)
@@ -23,7 +22,7 @@
 A comprehensive guide to configuring the plugin to your liking. All options are set through the `setup()` function:
 
 ```lua
-require('cord').setup {
+require('duvet').setup {
     -- Your configuration options go here
 }
 ```
@@ -43,7 +42,6 @@ If you want a fresh start, you can copy the default config and tweak it. I sugge
   enabled = true,
   log_level = vim.log.levels.OFF,
   editor = {
-    client = 'neovim',
     tooltip = 'The Superior Text Editor',
     icon = nil,
   },
@@ -90,13 +88,6 @@ If you want a fresh start, you can copy the default config and tweak it. I sugge
     terminal = function(opts) return 'Running commands in ' .. opts.name end,
     dashboard = 'Home',
   }, 
-  buttons = nil,
-  -- buttons = {
-  --   {
-  --     label = 'View Repository',
-  --     url = function(opts) return opts.repo_url end,
-  --   },
-  -- },
   assets = nil,
   variables = nil,
   hooks = {
@@ -126,7 +117,7 @@ If you want a fresh start, you can copy the default config and tweak it. I sugge
       executable_path = nil,
       timeout = 300000,
     },
-    discord = {
+    duvet = {
       pipe_paths = nil,
       reconnect = {
         enabled = false,
@@ -159,23 +150,22 @@ If you want a fresh start, you can copy the default config and tweak it. I sugge
 If you need to delay the initialization of the plugin, you can prevent it from starting automatically by setting a global variable:
 
 ```lua
-vim.g.cord_defer_startup = true
+vim.g.duvet_defer_startup = true
 ```
 
-With this option set to true, the plugin **will not start automatically**. Instead, you'll need to manually initialize it by calling `require('cord').setup()`.
+With this option set to true, the plugin **will not start automatically**. Instead, you'll need to manually initialize it by calling `require('duvet').setup()`.
 
 ### 🧰 Useful Functions
 
-- `require('cord.api.icon').get(name: string, theme?: string, flavor?: string): string`
-  - **Get Icon URL:** Returns the URL for the specified icon `name`, optional `theme`, and optional `flavor`. If `theme` or `flavor` is not provided, they default to the configured `display.theme` and `display.flavor`, respectively. Useful for referencing Cord's built-in icons in your custom configurations.
+- `require('duvet.api.icon').get(name: string, theme?: string, flavor?: string): string`
+  - **Get Icon URL:** Returns the URL for the specified icon `name`, optional `theme`, and optional `flavor`. If `theme` or `flavor` is not provided, they default to the configured `display.theme` and `display.flavor`, respectively. Useful for referencing Duvet's built-in icons in your custom configurations.
 
 ## 🎨 Editor
 
 | Option           | Type            | Default                      | Description                                                                                                                                                                 |
 |------------------|-----------------|------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `editor.client`  | `string`        | `'neovim'`                   | Client identifier. Can be `'vim'`, `'neovim'`, `'lunarvim'`, `'nvchad'`, `'astronvim'`, `'lazyvim'`, or a custom Discord application ID. Takes effect after `:Cord restart` |
 | `editor.tooltip` | `string`        | `'The Superior Text Editor'` | Tooltip shown when hovering over editor icon                                                                                                                                |
-| `editor.icon`    | `string \| nil` | `nil`                        | Custom icon URL or asset ID when using custom client ID                                                                                                                     |
+| `editor.icon`    | `string \| nil` | `nil`                        | Custom icon URL                                                                                                                     |
 
 ## 📊 Display
 
@@ -201,7 +191,7 @@ With this option set to true, the plugin **will not start automatically**. Inste
 
 | Option                      | Type      | Default | Description                                                                                                                                                                                 |
 |-----------------------------|-----------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `timestamp.enabled`         | `boolean` | `true`  | Show elapsed time in presence. <br /> Currently Broken. See [FAQ](https://github.com/vyfor/cord.nvim/wiki/FAQ#q-why-cant-i-disable-timestamps-in-my-rich-presence-why-are-they-misbehaving) |
+| `timestamp.enabled`         | `boolean` | `true`  | Show elapsed time in presence. |
 | `timestamp.reset_on_idle`   | `boolean` | `false` | Reset timestamp when entering idle state                                                                                                                                                    |
 | `timestamp.reset_on_change` | `boolean` | `false` | Reset timestamp when presence changes                                                                                                                                                       |
 | `timestamp.shared`          | `boolean` | `false` | Synchronize timestamps between clients                                                                                                                                                      |
@@ -307,23 +297,6 @@ text = {
 }
 ```
 
-## 🕹️ Buttons
-
-Buttons can have static or dynamic labels and URLs:
-
-```lua
-buttons = {
-    {
-        label = function(opts)
-            return opts.repo_url and 'View Repository' or 'Website'
-        end,
-        url = function(opts)
-            return opts.repo_url or 'https://example.com'
-        end
-    }
-}
-```
-
 ## 🗃️ Assets
 
 Override icons and text for specific filetypes or filenames. Most of the options also support functions.
@@ -368,7 +341,7 @@ vim.filetype.add {
 Example configuration:
 
 ```lua
-require('cord').setup {
+require('duvet').setup {
     variables = {
         filename = 'a file',
         problems = function(opts) return #vim.diagnostic.get(0) end,
@@ -383,8 +356,8 @@ require('cord').setup {
 
 | Option                   | Type                                                                                 | Description                                                                                                        |
 |--------------------------|--------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|
-| `hooks.ready`            | `function(manager) \| table<fun: function(manager), priority: number>`               | Called when connected to the server and ready for communication with Discord ([manager](#activitymanager-methods)) |
-| `hooks.shutdown`         | `function() \| table<fun: function(), priority: number>`                             | Called when connection to Discord is closed                                                                        |
+| `hooks.ready`            | `function(manager) \| table<fun: function(manager), priority: number>`               | Called when connected to the server and ready for communication with Duvet ([manager](#activitymanager-methods)) |
+| `hooks.shutdown`         | `function() \| table<fun: function(), priority: number>`                             | Called when connection to Duvet is closed                                                                        |
 | `hooks.pre_activity`     | `function(opts) \| table<fun: function(opts), priority: number>`                     | Called before building activity ([opts](#options-table))                                                           |
 | `hooks.post_activity`    | `function(opts, activity) \| table<fun: function(opts, activity), priority: number>` | Called after building activity, but before sending it ([opts](#options-table), [activity](#activity))              |
 | `hooks.idle_enter`       | `function(opts) \| table<fun: function(opts), priority: number>`                     | Called when entering idle state ([opts](#options-table))                                                           |
@@ -398,9 +371,9 @@ require('cord').setup {
 
 | Option       | Type                               | Description                                                                  |
 |--------------|------------------------------------|------------------------------------------------------------------------------|
-| `extensions` | `string[] \| table<string, table>` | Extend Cord with extensions. See the [Wiki](./Extensions.md) for more info   |
+| `extensions` | `string[] \| table<string, table>` | Extend Duvet with extensions. See the [Wiki](./Extensions.md) for more info   |
 
-> If you want to develop your own extension, check out Cord's [Extension System](./Extension-System.md)
+> If you want to develop your own extension, check out Duvet's [Extension System](./Extension-System.md)
 
 ## ⚙️ Advanced
 
@@ -424,19 +397,19 @@ require('cord').setup {
 | `advanced.server.executable_path` | `string \| nil` | `nil`     | Custom server executable path                                                                                                                                                                                                            |
 | `advanced.server.timeout`         | `number`        | `300000`  | Server shutdown timeout (ms)                                                                                                                                                                                                             |
 
-### Discord Settings
+### Duvet Settings
 
 | Option                                  | Type       | Default      | Description                                                        |
 |-----------------------------------------|------------|--------------|--------------------------------------------------------------------|
-| `advanced.discord.pipe_paths`           | `string[]` | `nil`        | Custom IPC pipe paths to use when connecting to Discord            |
-| `advanced.discord.reconnect.enabled`    | `boolean`  | `false`      | Whether reconnection is enabled. Has minimal impact on performance |
-| `advanced.discord.reconnect.interval`   | `number`   | `5000`       | Reconnection interval in milliseconds, 0 to disable                |
-| `advanced.discord.reconnect.initial`    | `boolean`  | `true`       | Whether to reconnect if initial connection fails                   |
-| `advanced.discord.sync.enabled`         | `boolean`  | `false`      | Whether synchronization logic is enabled                           |
-| `advanced.discord.sync.mode`            | `string`   | `'periodic'` | Synchronization mode: `'periodic'` or `'defer'`                    |
-| `advanced.discord.sync.interval`        | `number`   | `12000`      | Synchronization interval in milliseconds                           |
-| `advanced.discord.sync.reset_on_update` | `boolean`  | `true`       | Whether to reset periodic synchronization on activity updates      |
-| `advanced.discord.sync.pad`             | `boolean`  | `false`      | Whether to pad activity fields with whitespace                     |
+| `advanced.duvet.pipe_paths`           | `string[]` | `nil`        | Full path(s) of Duvet's socket or pipe, overriding the default            |
+| `advanced.duvet.reconnect.enabled`    | `boolean`  | `false`      | Whether reconnection is enabled. Has minimal impact on performance |
+| `advanced.duvet.reconnect.interval`   | `number`   | `5000`       | Reconnection interval in milliseconds, 0 to disable                |
+| `advanced.duvet.reconnect.initial`    | `boolean`  | `true`       | Whether to reconnect if initial connection fails                   |
+| `advanced.duvet.sync.enabled`         | `boolean`  | `false`      | Whether synchronization logic is enabled                           |
+| `advanced.duvet.sync.mode`            | `string`   | `'periodic'` | Synchronization mode: `'periodic'` or `'defer'`                    |
+| `advanced.duvet.sync.interval`        | `number`   | `12000`      | Synchronization interval in milliseconds                           |
+| `advanced.duvet.sync.reset_on_update` | `boolean`  | `true`       | Whether to reset periodic synchronization on activity updates      |
+| `advanced.duvet.sync.pad`             | `boolean`  | `false`      | Whether to pad activity fields with whitespace                     |
 
 ### Workspace Settings
 
@@ -456,36 +429,36 @@ The `advanced.cursor_update_mode` option controls how cursor position updates ar
 
 >[!NOTE]
 > Autocompletion is fully supported.
-> To see the list of all available features, hit `<Tab>` after typing `:Cord enable`
+> To see the list of all available features, hit `<Tab>` after typing `:Duvet enable`
 
-- `:Cord enable` - Show presence
-  - `:Cord enable <feature>` - Enable a feature
-- `:Cord disable` - Hide presence
-  - `:Cord disable <feature>` - Disable a feature
-- `:Cord toggle` - Toggle presence
-  - `:Cord toggle <feature>` - Toggle a feature
-- `:Cord presence` - Toggle presence display
-  - `:Cord presence show` - Show presence
-  - `:Cord presence hide` - Hide presence
-  - `:Cord presence suppress` - Suppress presence for current Neovim session
-  - `:Cord presence toggle` - Toggle presence
-  - `:Cord presence toggle_suppress` - Toggle presence suppression
-- `:Cord idle` - Toggle idle state
-  - `:Cord idle toggle` - Toggle idle state
-  - `:Cord idle show` - Show idle state
-  - `:Cord idle hide` - Hide idle state
-  - `:Cord idle force` - Force idle state
-- `:Cord update` - Update the server executable using the configured update mode (fetch by default)
-  - `:Cord update check` - Check for server updates
-  - `:Cord update fetch` - Fetch the server executable from GitHub using `curl`
-  - `:Cord update install` - Install the server executable from crates.io using `cargo`
-  - `:Cord update build` - Build the server executable locally using `cargo`
-- `:Cord status` - Show connection status
-- `:Cord version` - Show current server version
-- `:Cord restart` - Restart the server
-- `:Cord reconnect` - Reconnect to Discord
-- `:Cord shutdown` - Disconnect from Discord and shutdown the server
-- `:Cord health` - Validate user configuration
+- `:Duvet enable` - Show presence
+  - `:Duvet enable <feature>` - Enable a feature
+- `:Duvet disable` - Hide presence
+  - `:Duvet disable <feature>` - Disable a feature
+- `:Duvet toggle` - Toggle presence
+  - `:Duvet toggle <feature>` - Toggle a feature
+- `:Duvet presence` - Toggle presence display
+  - `:Duvet presence show` - Show presence
+  - `:Duvet presence hide` - Hide presence
+  - `:Duvet presence suppress` - Suppress presence for current Neovim session
+  - `:Duvet presence toggle` - Toggle presence
+  - `:Duvet presence toggle_suppress` - Toggle presence suppression
+- `:Duvet idle` - Toggle idle state
+  - `:Duvet idle toggle` - Toggle idle state
+  - `:Duvet idle show` - Show idle state
+  - `:Duvet idle hide` - Hide idle state
+  - `:Duvet idle force` - Force idle state
+- `:Duvet update` - Update the server executable using the configured update mode (fetch by default)
+  - `:Duvet update check` - Check for server updates
+  - `:Duvet update fetch` - Fetch the server executable from GitHub using `curl`
+  - `:Duvet update install` - Install the server executable from crates.io using `cargo`
+  - `:Duvet update build` - Build the server executable locally using `cargo`
+- `:Duvet status` - Show connection status
+- `:Duvet version` - Show current server version
+- `:Duvet restart` - Restart the server
+- `:Duvet reconnect` - Reconnect to Duvet
+- `:Duvet shutdown` - Disconnect from Duvet and shutdown the server
+- `:Duvet health` - Validate user configuration
 
 ## Options Table
 
@@ -508,7 +481,7 @@ The `opts` parameter passed to all functions and hooks contains the following in
   cursor_char       = number,           -- Current cursor character number
 
   -- Timestamp Information
-  timestamp         = number,           -- Timestamp passed to the Rich Presence in milliseconds
+  timestamp         = number,           -- Timestamp passed to the presence in milliseconds
 
   -- Workspace Information
   workspace         = string?,          -- Current workspace name
@@ -518,7 +491,6 @@ The `opts` parameter passed to all functions and hooks contains the following in
   -- Editor Information
   is_focused        = boolean,          -- Whether Neovim is focused
   is_idle           = boolean,          -- Whether the session is idle
-  buttons           = table?,           -- List of configured presence buttons
 
   -- Asset Information
   type              = string,           -- Which category the asset belongs to, e.g. 'language' or 'docs'
@@ -539,7 +511,7 @@ The `ActivityManager` contains useful methods:
 | `manager:pause_events()`                | Disables event handling without affecting the idle timer.                                                                                            |
 | `manager:resume_events()`               | Enables event handling and queues an immediate update.                                                                                               |
 | `manager:skip_update()`                 | Skips the next update once.                                                                                                                          |
-| `manager:hide()`                        | Pauses events and clears rich presence.                                                                                                              |
+| `manager:hide()`                        | Pauses events and clears the presence.                                                                                                              |
 | `manager:suppress()`                    | Pauses events and suppresses sending presence updates for the current Neovim session.                                                                |
 | `manager:toggle()`                      | Toggles between pausing and resuming the activity updates.                                                                                           |
 | `manager:toggle_suppress()`             | Toggles between suppressing and resuming sending presence updates for the current Neovim session.                                                    |
@@ -547,7 +519,7 @@ The `ActivityManager` contains useful methods:
 | `manager:force_idle()`                  | Forcibly sets the session to idle until unforced.                                                                                                    |
 | `manager:unidle()`                      | Clears the idle state and resumes normal activity.                                                                                                   |
 | `manager:toggle_idle()`                 | Toggles between idle and normal activity.                                                                                                            |
-| `manager:set_activity(activity, force)` | Sets the rich presence to the provided [activity](#activity-options). Setting `force` to true will bypass any previous `manager:skip_update()` call. |
+| `manager:set_activity(activity, force)` | Sets the presence to the provided [activity](#activity-options). Setting `force` to true will bypass any previous `manager:skip_update()` call. |
 | `manager:clear_activity(force)`         | Clears the current activity from the server. If `force` is true, it completely clears the presence.                                                  |
 
 ## Activity Options
@@ -555,12 +527,8 @@ The `ActivityManager` contains useful methods:
 | Parameter             | Type      | Description                                                                                                                    |
 |-----------------------|-----------|--------------------------------------------------------------------------------------------------------------------------------|
 | `type`                | `string`  | One of 'playing', 'listening', 'watching', 'competing'                                                                         |
-| `status_display_type` | `string`  | One of 'name', 'state', 'details'. Controls which field is displayed in the user's status text in the member list              |
 | `details`             | `string`  | Detailed information about what the user is doing.                                                                             |
-| `details_url`         | `string`  | URL for the details field to make it clickable.                                                                                |
 | `state`               | `string`  | The user's current state (e.g., "Editing a file").                                                                             |
-| `state_url`           | `string`  | URL for the state field to make it clickable.                                                                                  |
 | `timestamps`          | `table`   | Contains `start` and `end` timestamps for the activity.                                                                        |
-| `assets`              | `table`   | Defines images and tooltips, including `large_image`, `large_text`, `large_url`, `small_image`, `small_text`, and `small_url`. |
-| `buttons`             | `array`   | Array of objects, each with `label` and `url`, defining interactive buttons in the presence.                                   |
+| `assets`              | `table`   | Defines images and tooltips, including `large_image`, `large_text`, `small_image`, and `small_text`. |
 | `is_idle`             | `boolean` | Whether the activity should be considered as idle.                                                                             |
