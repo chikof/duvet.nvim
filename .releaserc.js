@@ -29,7 +29,7 @@ module.exports = {
           ]
         }
       }
-    ]
+    ],
     [
       "@semantic-release/commit-analyzer",
       {
