@@ -3,13 +3,15 @@ use super::local::LocalEvent;
 use super::server::ServerEvent;
 use crate::cord::Cord;
 
-#[allow(clippy::large_enum_variant)]
 #[derive(Debug)]
 pub enum Event {
     Client(ClientEvent),
     Local(LocalEvent),
     Server(ServerEvent),
 }
+
+#[cfg(target_pointer_width = "64")]
+const _: () = assert!(std::mem::size_of::<Event>() == 48);
 
 pub struct EventContext<'a> {
     pub cord: &'a mut Cord,

@@ -18,6 +18,9 @@ pub struct Activity {
     pub is_idle: bool,
 }
 
+#[cfg(target_pointer_width = "64")]
+const _: () = assert!(std::mem::size_of::<Activity>() == 184);
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 #[repr(u8)]
 pub enum ActivityType {

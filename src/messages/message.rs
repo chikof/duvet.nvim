@@ -6,6 +6,9 @@ pub struct Message {
     pub event: Event,
 }
 
+#[cfg(target_pointer_width = "64")]
+const _: () = assert!(std::mem::size_of::<Message>() == 56);
+
 impl Message {
     pub fn new(client_id: u32, message: Event) -> Self {
         Self {

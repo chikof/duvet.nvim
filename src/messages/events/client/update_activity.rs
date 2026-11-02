@@ -9,9 +9,12 @@ use crate::{debug, trace};
 
 #[derive(Debug)]
 pub struct UpdateActivityEvent {
-    activity: Activity,
+    activity: Box<Activity>,
     force: bool,
 }
+
+#[cfg(target_pointer_width = "64")]
+const _: () = assert!(std::mem::size_of::<UpdateActivityEvent>() == 16);
 
 impl OnEvent for UpdateActivityEvent {
     // if new activity is idle, set the most recent activity available, if not, display the new activity
@@ -58,7 +61,7 @@ impl OnEvent for UpdateActivityEvent {
                     .and_then(|(_, s)| s.last_activity.clone()),
             )
             .flatten()
-            .unwrap_or(self.activity);
+            .unwrap_or(*self.activity);
 
         if ctx.cord.config.shared_timestamps {
             let shared_ts = &ctx.cord.session_manager.shared_timestamp;
@@ -131,6 +134,9 @@ impl Deserialize for UpdateActivityEvent {
             .and_then(|v| v.as_bool())
             .unwrap_or_default();
 
-        Ok(UpdateActivityEvent { activity, force })
+        Ok(UpdateActivityEvent {
+            activity: Box::new(activity),
+            force,
+        })
     }
 }

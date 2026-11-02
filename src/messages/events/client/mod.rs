@@ -1,5 +1,3 @@
-#![allow(clippy::large_enum_variant)]
-
 use crate::messages::events::event::{EventContext, OnEvent};
 use crate::protocol::msgpack::{Deserialize, MsgPack};
 use crate::types::config::PluginConfig;
@@ -34,6 +32,9 @@ pub enum ClientEvent {
     Restart(RestartEvent),
     Reconnect(ReconnectClientEvent),
 }
+
+#[cfg(target_pointer_width = "64")]
+const _: () = assert!(std::mem::size_of::<ClientEvent>() == 48);
 
 /// Extracts the 'data' field from a map and returns an error if it is missing or invalid.
 ///
