@@ -1,3 +1,10 @@
 /.vscode
 /target
 .direnv/
+
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+.env
+.env.local
+.pre-commit-config.yaml
